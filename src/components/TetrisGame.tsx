@@ -10,15 +10,15 @@ export const TetrisGame: React.FC = () => {
   const { gameState, actions } = useTetris();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-2 md:p-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl md:text-6xl font-bold text-center mb-8 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-center mb-4 md:mb-8 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
           TETRIS
         </h1>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 md:gap-6">
           {/* Left Panel - Stats and Next Piece */}
-          <div className="space-y-4 order-2 lg:order-1">
+          <div className="space-y-3 md:space-y-4 order-2 lg:order-1">
             <GameStats 
               stats={{
                 score: gameState.score,
@@ -49,9 +49,10 @@ export const TetrisGame: React.FC = () => {
           </div>
         </div>
         
-        <div className="mt-8 text-center text-gray-400">
-          <p className="text-sm">
-            Use as setas do teclado para jogar • Espaço para girar • Enter para queda rápida
+        <div className="mt-4 md:mt-8 text-center text-gray-400">
+          <p className="text-xs md:text-sm">
+            <span className="md:hidden">Toque para girar • Arraste para mover e soltar</span>
+            <span className="hidden md:inline">Use as setas do teclado para jogar • Espaço para girar • Enter para queda rápida</span>
           </p>
         </div>
       </div>
