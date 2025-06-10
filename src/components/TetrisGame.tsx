@@ -61,7 +61,7 @@ export const TetrisGame: React.FC = () => {
         <div className="mt-4 md:mt-8 text-center text-gray-400">
           <p className="text-xs md:text-sm">
             {controlMode === 'mobile' ? (
-              <span>Use os controles virtuais na parte inferior da tela</span>
+              <span>Use o gamepad virtual na parte inferior da tela</span>
             ) : (
               <>
                 <span className="md:hidden">Setas ou WASD para mover • W/Q/Espaço para girar • E/Enter para queda rápida</span>

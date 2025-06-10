@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Tetromino } from '../types/tetrisTypes';
 import { LEVEL_SPEED } from '../constants/tetrisConstants';
@@ -27,7 +28,6 @@ export const useTetris = () => {
   const [controlMode, setControlMode] = useState<'mobile' | 'pc'>('pc');
   const gameLoopRef = useRef<NodeJS.Timeout>();
   const lastDropTime = useRef<number>(Date.now());
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const dropPiece = useCallback(() => {
     setGameState(prevState => {
@@ -177,47 +177,6 @@ export const useTetris = () => {
     });
   }, []);
 
-  // Touch gesture handlers (only for mobile mode)
-  const handleTouchStart = useCallback((event: TouchEvent) => {
-    if (controlMode !== 'mobile') return;
-    const touch = event.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-  }, [controlMode]);
-
-  const handleTouchEnd = useCallback((event: TouchEvent) => {
-    if (controlMode !== 'mobile' || !touchStartRef.current || gameState.isGameOver) return;
-
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - touchStartRef.current.x;
-    const deltaY = touch.clientY - touchStartRef.current.y;
-    const absDeltaX = Math.abs(deltaX);
-    const absDeltaY = Math.abs(deltaY);
-
-    // Minimum swipe distance to register gesture
-    const minSwipeDistance = 30;
-
-    if (absDeltaX > minSwipeDistance || absDeltaY > minSwipeDistance) {
-      if (absDeltaX > absDeltaY) {
-        // Horizontal swipe
-        if (deltaX > 0) {
-          movePiece('right');
-        } else {
-          movePiece('left');
-        }
-      } else {
-        // Vertical swipe
-        if (deltaY > 0) {
-          hardDrop();
-        }
-      }
-    } else {
-      // Tap to rotate
-      rotatePieceAction();
-    }
-
-    touchStartRef.current = null;
-  }, [controlMode, gameState.isGameOver, movePiece, hardDrop, rotatePieceAction]);
-
   // Game loop
   useEffect(() => {
     if (gameState.isGameOver || gameState.isPaused) {
@@ -296,19 +255,6 @@ export const useTetris = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [controlMode, gameState.isGameOver, movePiece, dropPiece, rotatePieceAction, hardDrop, pauseGame]);
-
-  // Touch controls (only for mobile mode)
-  useEffect(() => {
-    if (controlMode !== 'mobile') return;
-
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [controlMode, handleTouchStart, handleTouchEnd]);
 
   return {
     gameState,
