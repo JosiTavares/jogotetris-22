@@ -240,7 +240,7 @@ export const useTetris = () => {
     };
   }, [gameState.level, gameState.isGameOver, gameState.isPaused, dropPiece]);
 
-  // Enhanced keyboard controls with WASD and 60% keyboard support
+  // Enhanced keyboard controls - ONLY for PC mode
   useEffect(() => {
     if (controlMode !== 'pc') return;
 
