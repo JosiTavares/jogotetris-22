@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { GameState, Tetromino } from '../types/tetrisTypes';
 import { LEVEL_SPEED } from '../constants/tetrisConstants';
@@ -25,6 +24,7 @@ export const useTetris = () => {
     isPaused: false
   }));
 
+  const [controlMode, setControlMode] = useState<'mobile' | 'pc'>('pc');
   const gameLoopRef = useRef<NodeJS.Timeout>();
   const lastDropTime = useRef<number>(Date.now());
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -177,14 +177,15 @@ export const useTetris = () => {
     });
   }, []);
 
-  // Touch gesture handlers
+  // Touch gesture handlers (only for mobile mode)
   const handleTouchStart = useCallback((event: TouchEvent) => {
+    if (controlMode !== 'mobile') return;
     const touch = event.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-  }, []);
+  }, [controlMode]);
 
   const handleTouchEnd = useCallback((event: TouchEvent) => {
-    if (!touchStartRef.current || gameState.isGameOver) return;
+    if (controlMode !== 'mobile' || !touchStartRef.current || gameState.isGameOver) return;
 
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
@@ -215,7 +216,7 @@ export const useTetris = () => {
     }
 
     touchStartRef.current = null;
-  }, [gameState.isGameOver, movePiece, hardDrop, rotatePieceAction]);
+  }, [controlMode, gameState.isGameOver, movePiece, hardDrop, rotatePieceAction]);
 
   // Game loop
   useEffect(() => {
@@ -239,36 +240,54 @@ export const useTetris = () => {
     };
   }, [gameState.level, gameState.isGameOver, gameState.isPaused, dropPiece]);
 
-  // Keyboard controls
+  // Enhanced keyboard controls with WASD and 60% keyboard support
   useEffect(() => {
+    if (controlMode !== 'pc') return;
+
     const handleKeyPress = (event: KeyboardEvent) => {
       if (gameState.isGameOver) return;
 
+      // Prevent default for all game keys
+      const gameKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ', 'Enter', 'p', 'P', 'w', 'W', 'a', 'A', 's', 'S', 'd', 'D', 'q', 'Q', 'e', 'E'];
+      if (gameKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+
       switch (event.key) {
+        // Arrow keys (traditional)
         case 'ArrowLeft':
-          event.preventDefault();
+        case 'a':
+        case 'A':
           movePiece('left');
           break;
         case 'ArrowRight':
-          event.preventDefault();
+        case 'd':
+        case 'D':
           movePiece('right');
           break;
         case 'ArrowDown':
-          event.preventDefault();
+        case 's':
+        case 'S':
           dropPiece();
           break;
+        // Rotate keys
         case 'ArrowUp':
+        case 'w':
+        case 'W':
         case ' ':
-          event.preventDefault();
+        case 'q':
+        case 'Q':
           rotatePieceAction();
           break;
+        // Hard drop
         case 'Enter':
-          event.preventDefault();
+        case 'e':
+        case 'E':
           hardDrop();
           break;
+        // Pause
         case 'p':
         case 'P':
-          event.preventDefault();
           pauseGame();
           break;
       }
@@ -276,10 +295,12 @@ export const useTetris = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState.isGameOver, movePiece, dropPiece, rotatePieceAction, hardDrop, pauseGame]);
+  }, [controlMode, gameState.isGameOver, movePiece, dropPiece, rotatePieceAction, hardDrop, pauseGame]);
 
-  // Touch controls
+  // Touch controls (only for mobile mode)
   useEffect(() => {
+    if (controlMode !== 'mobile') return;
+
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
@@ -287,10 +308,12 @@ export const useTetris = () => {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [handleTouchStart, handleTouchEnd]);
+  }, [controlMode, handleTouchStart, handleTouchEnd]);
 
   return {
     gameState,
+    controlMode,
+    setControlMode,
     actions: {
       movePiece,
       rotatePiece: rotatePieceAction,

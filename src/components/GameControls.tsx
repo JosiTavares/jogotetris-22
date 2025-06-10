@@ -27,7 +27,7 @@ export const GameControls: React.FC<GameControlsProps> = ({
   return (
     <div className="space-y-4">
       <div className="bg-gray-900 p-4 rounded-lg border-2 border-gray-700 shadow-xl">
-        <h3 className="text-lg font-bold text-white mb-4 text-center">Controles</h3>
+        <h3 className="text-lg font-bold text-white mb-4 text-center">Controles PC</h3>
         
         <div className="space-y-3">
           <div className="flex gap-2">
@@ -97,20 +97,16 @@ export const GameControls: React.FC<GameControlsProps> = ({
       </div>
       
       <div className="bg-gray-900 p-4 rounded-lg border-2 border-gray-700 shadow-xl">
-        <h4 className="text-sm font-bold text-white mb-2">Controles:</h4>
+        <h4 className="text-sm font-bold text-white mb-2">Controles de Teclado:</h4>
         <div className="text-xs text-gray-300 space-y-1">
-          <div className="md:hidden">
-            <div>👆 Toque: Girar</div>
-            <div>⬅️➡️ Arrastar: Mover</div>
-            <div>⬇️ Arrastar: Queda rápida</div>
-          </div>
-          <div className="hidden md:block">
-            <div>← → : Mover</div>
-            <div>↑ / Espaço: Girar</div>
-            <div>↓ : Descer</div>
-            <div>Enter: Queda rápida</div>
-            <div>P: Pausar</div>
-          </div>
+          <div><span className="text-blue-400">A/D ou ←/→</span>: Mover</div>
+          <div><span className="text-purple-400">W/Q/↑/Espaço</span>: Girar</div>
+          <div><span className="text-green-400">S/↓</span>: Descer</div>
+          <div><span className="text-orange-400">E/Enter</span>: Queda rápida</div>
+          <div><span className="text-yellow-400">P</span>: Pausar</div>
+        </div>
+        <div className="mt-2 text-xs text-gray-500">
+          ✓ Compatível com teclado 60%
         </div>
       </div>
     </div>

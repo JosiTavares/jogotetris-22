@@ -5,9 +5,11 @@ import { TetrisBoard } from './TetrisBoard';
 import { NextPiece } from './NextPiece';
 import { GameStats } from './GameStats';
 import { GameControls } from './GameControls';
+import { DeviceSelector } from './DeviceSelector';
+import { MobileGamepad } from './MobileGamepad';
 
 export const TetrisGame: React.FC = () => {
-  const { gameState, actions } = useTetris();
+  const { gameState, controlMode, setControlMode, actions } = useTetris();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-2 md:p-4">
@@ -17,8 +19,12 @@ export const TetrisGame: React.FC = () => {
         </h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 md:gap-6">
-          {/* Left Panel - Stats and Next Piece */}
+          {/* Left Panel - Device Selector, Stats and Next Piece */}
           <div className="space-y-3 md:space-y-4 order-2 lg:order-1">
+            <DeviceSelector 
+              selectedDevice={controlMode}
+              onDeviceChange={setControlMode}
+            />
             <GameStats 
               stats={{
                 score: gameState.score,
@@ -34,28 +40,53 @@ export const TetrisGame: React.FC = () => {
             <TetrisBoard gameState={gameState} />
           </div>
           
-          {/* Right Panel - Controls */}
-          <div className="order-3">
-            <GameControls
-              isPaused={gameState.isPaused}
-              isGameOver={gameState.isGameOver}
-              onPause={actions.pauseGame}
-              onReset={actions.resetGame}
-              onMove={actions.movePiece}
-              onRotate={actions.rotatePiece}
-              onDrop={actions.dropPiece}
-              onHardDrop={actions.hardDrop}
-            />
-          </div>
+          {/* Right Panel - Controls (only show for PC mode) */}
+          {controlMode === 'pc' && (
+            <div className="order-3">
+              <GameControls
+                isPaused={gameState.isPaused}
+                isGameOver={gameState.isGameOver}
+                onPause={actions.pauseGame}
+                onReset={actions.resetGame}
+                onMove={actions.movePiece}
+                onRotate={actions.rotatePiece}
+                onDrop={actions.dropPiece}
+                onHardDrop={actions.hardDrop}
+              />
+            </div>
+          )}
         </div>
         
+        {/* Instructions */}
         <div className="mt-4 md:mt-8 text-center text-gray-400">
           <p className="text-xs md:text-sm">
-            <span className="md:hidden">Toque para girar • Arraste para mover e soltar</span>
-            <span className="hidden md:inline">Use as setas do teclado para jogar • Espaço para girar • Enter para queda rápida</span>
+            {controlMode === 'mobile' ? (
+              <span>Use os controles virtuais na parte inferior da tela</span>
+            ) : (
+              <>
+                <span className="md:hidden">Setas ou WASD para mover • W/Q/Espaço para girar • E/Enter para queda rápida</span>
+                <span className="hidden md:inline">
+                  Setas ou WASD: Mover • ↑/W/Q/Espaço: Girar • ↓/S: Descer • E/Enter: Queda rápida • P: Pausar
+                </span>
+              </>
+            )}
           </p>
         </div>
       </div>
+
+      {/* Mobile Gamepad */}
+      {controlMode === 'mobile' && (
+        <MobileGamepad
+          isPaused={gameState.isPaused}
+          isGameOver={gameState.isGameOver}
+          onPause={actions.pauseGame}
+          onReset={actions.resetGame}
+          onMove={actions.movePiece}
+          onRotate={actions.rotatePiece}
+          onDrop={actions.dropPiece}
+          onHardDrop={actions.hardDrop}
+        />
+      )}
     </div>
   );
 };
